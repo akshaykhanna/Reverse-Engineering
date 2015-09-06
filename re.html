@@ -1,0 +1,481 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Reverse Engineering</title>
+<style type="text/css">
+
+body {
+	font: 100%/1.4 Verdana, Arial, Helvetica, sans-serif;
+	background-color: #42413C;
+	margin: 0;
+	padding: 0;
+	color: #000;
+}
+ul, ol, dl { 
+	padding: 0;
+	margin: 0;
+}
+h1, h2, h3, h4, h5, h6, p {
+	margin-top: 0;	 
+	padding-right: 15px;
+	padding-left: 15px; 
+}
+a img { 
+	border: none;
+}
+a:link {
+	color: #42413C;
+	text-decoration: underline; 
+}
+a:visited {
+	color: #6E6C64;
+	text-decoration: underline;
+}
+a:hover, a:active, a:focus { 
+	text-decoration: none;
+}
+/* ~~ This fixed width container surrounds all other blocks ~~ */
+.container {
+	width: 960px;
+	background-color: #FFFFFF;
+	margin: 0 auto; /* the auto value on the sides, coupled with the width, centers the layout */
+}
+
+header {
+     text align-center;
+	background-color: #dededc;
+	
+}
+#wrap	{
+	width: 100%; 
+	height: 50px; 
+	margin: 0; /* Ensures there is no space between sides of the screen and the menu */
+	z-index: 99; /* Makes sure that your menu remains on top of other page elements */
+	position: relative; 
+	background-color: #366b82;
+	}
+	
+	.navbar	{
+	height: 50px;
+        padding: 0;
+	margin: 0;
+	position: absolute; /* Ensures that the menu doesn’t affect other elements */
+	border-right: 1px solid #54879d; 
+	}
+	
+	.navbar li 	{
+			height: auto;
+			width: 150px;  /* Each menu item is 150px wide */
+			float: left;  /* This lines up the menu items horizontally */
+			text-align: center;  /* All text is placed in the center of the box */
+			list-style: none;  /* Removes the default styling (bullets) for the list */
+			font: normal bold 12px/1.2em Arial, Verdana, Helvetica;  
+			padding: 0;
+			margin: 0;
+			background-color: #366b82;
+                        }
+						
+	.navbar a	{							
+		padding: 18px 0;  
+		border-left: 1px solid #54879d;
+		border-right: 1px solid #1f5065; 
+		text-decoration: none;  /* Removes the default hyperlink styling. */
+		color: white; /* Text color is white */
+		display: block;
+		}
+    .navbar li:hover, a:hover {background-color: #54879d;}
+
+.navbar li ul 	{
+		display: none;  /* Hides the drop-down menu */
+		height: auto;									
+		margin: 0; 
+		padding: 0; 			
+		}				
+
+.navbar li:hover ul 	{
+                        display: block; 
+                        }
+.navbar li ul li {background-color: #54879d;}
+
+.navbar li ul li a 	{
+		border-left: 1px solid #1f5065; 
+		border-right: 1px solid #1f5065; 
+		border-top: 1px solid #74a3b7; 
+		border-bottom: 1px solid #1f5065; 
+		}
+				
+.navbar li ul li a:hover	{background-color: #366b82;}
+						
+
+.sidebar1 {
+	float: right;
+	width: 290px;
+	background-color: #EADCAE;
+	padding-bottom: 10px;
+}
+.content {
+	padding: 10px 0;
+	width: 670px;
+	float: right;
+}
+
+/* ~~ This grouped selector gives the lists in the .content area space ~~ */
+.content ul, .content ol {
+	padding: 0 15px 15px 40px;
+}
+
+
+ul.nav {
+	list-style: none; /* this removes the list marker */
+	border-top: 1px solid #666; 
+	margin-bottom: 15px; /* this creates the space between the navigation on the content below */
+}
+ul.nav li {
+	border-bottom: 1px solid #666; /* this creates the button separation */
+}
+ul.nav a, ul.nav a:visited { 
+	padding: 5px 5px 5px 15px;
+	display: block;
+	width: 160px;  
+	text-decoration: none;
+	background-color: #C6D580;
+}
+ul.nav a:hover, ul.nav a:active, ul.nav a:focus { 
+	background-color: #ADB96E;
+	color: #FFF;
+}
+
+/* ~~ The footer ~~ */
+footer {
+	padding: 10px 0;
+	text-align:center;
+	background-color: #cccccc;
+	position: relative;/* this gives IE6 hasLayout to properly clear */
+	clear: both; /* this clear property forces the .container to understand where the columns end and contain them */
+}
+
+/*HTML 5 support - Sets new HTML 5 tags to display:block so browsers know how to render the tags properly. */
+header, section, footer, aside, article, figure {
+	display: block;
+}
+#dnd {width:270px;height:210px;padding:10px;border:1px solid #aaaaaa; }
+
+#dndimg{
+display:block
+}
+#rainbow
+{
+width:100px;
+padding:10px;
+height:50px;
+background:#ff6666;
+position:relative;
+animation:myfirst 5s;
+-webkit-animation:myfirst 5s; /* Safari and Chrome */
+}
+
+@keyframes myfirst
+{
+0%   {background:red; left:0px; top:0px;}
+25%  {background:yellow; left:200px; top:0px;}
+50%  {background:blue; left:200px; top:200px;}
+75%  {background:green; left:0px; top:200px;}
+100% {background:red; left:0px; top:0px;}
+}
+
+@-webkit-keyframes myfirst /* Safari and Chrome */
+{
+0%   {background:red; left:0px; top:0px;}
+25%  {background:yellow; left:200px; top:0px;}
+50%  {background:blue; left:200px; top:200px;}
+75%  {background:green; left:0px; top:200px;}
+100% {background:red; left:0px; top:0px;}
+}
+
+#expand
+{
+width:100px;
+height:70px;
+padding:10px;
+background:#ffcc99;
+/* For Safari 3.1 to 6.0 */
+-webkit-transition-property:width;
+-webkit-transition-duration:1s;
+-webkit-transition-timing-function:linear;
+-webkit-transition-delay:2s;
+/* Standard syntax */
+transition-property:width;
+transition-duration:1s;
+transition-timing-function:linear;
+transition-delay:2s;
+}
+
+#expand:hover
+{
+width:250px;
+}
+#audio
+{
+width:250px;
+}
+
+#leftbox
+{
+ 
+ padding:20px;
+ margin-left:20px;
+ 
+ text-align:left;
+}
+
+#rightbox
+{
+
+width:250px;
+margin-left:20px;
+margin-bottom:10px;
+padding:20px;
+border:3px solid green;
+} 
+ 
+#mybox
+{
+display:block;
+text-align:center;
+padding:20px;
+margin:120px auto;
+background:pink;
+color:#ffffff;
+-webkit-border-radius:10px;
+opacity:0.6;
+width:140px;
+height:75px;
+-webkit-transition:-webkit-transform 2s, opacity 2s, background 2s, width 2s, height 2s;
+}
+#mybox:hover
+{
+  -webkit-transform:rotate(360deg);
+  opacity:1;
+  background:orange;
+  width:400px;
+  height:110px;
+  }
+
+</style>
+<script>
+function dofirst()
+{
+//alert("JS function");
+var button=document.getElementById("save");
+button.addEventListener("click",saveCrap,false);
+}
+function saveCrap()
+{
+var one=document.getElementById("one").value;
+var two=document.getElementById("two").value;
+var my=document.getElementById("mybox");
+my.innerHTML="Welcome..."+two+", Please to meet you!";
+sessionStorage.setItem(one,two);
+
+display(one);
+}
+function display(one)
+{
+var right=document.getElementById("rightbox");
+var two=sessionStorage.getItem(one);
+right.innerHTML="Name: " +two+ " </br> E No: "+one;
+}
+window.addEventListener("load",dofirst,false);
+
+function allowDrop(ev)
+{
+ev.preventDefault();
+}
+
+function drag(ev)
+{
+ev.dataTransfer.setData("Text",ev.target.id);
+}
+
+function drop(ev)
+{
+ev.preventDefault();
+var data=ev.dataTransfer.getData("Text");
+ev.target.appendChild(document.getElementById(data));
+}
+
+//canvas footer
+         var img = new Image();
+
+
+
+img.src = 'images/html5.jpg';
+var CanvasXSize = 800;
+var CanvasYSize = 200;
+var speed = 30; //lower is faster
+var scale = 1.05;
+var y = -4.5; //vertical offset
+
+// Main program
+
+var dx = 0.75;
+var imgW;
+var imgH;
+var x = 0;
+var clearX;
+var clearY;
+var ctx;
+
+img.onload = function() {
+    imgW = img.width*scale;
+    imgH = img.height*scale;
+    if (imgW > CanvasXSize) { x = CanvasXSize-imgW; } // image larger than canvas
+    if (imgW > CanvasXSize) { clearX = imgW; } // image larger than canvas
+    else { clearX = CanvasXSize; }
+    if (imgH > CanvasYSize) { clearY = imgH; } // image larger than canvas
+    else { clearY = CanvasYSize; }
+    //Get Canvas Element
+    ctx = document.getElementById('canvas').getContext('2d');
+    //Set Refresh Rate
+    return setInterval(draw, speed);
+}
+
+function draw() {
+    //Clear Canvas
+    ctx.clearRect(0,0,clearX,clearY);
+    //If image is <= Canvas Size
+    if (imgW <= CanvasXSize) {
+        //reset, start from beginning
+        if (x > (CanvasXSize)) { x = 0; }
+        //draw aditional image
+        if (x > (CanvasXSize-imgW)) { ctx.drawImage(img,x-CanvasXSize+1,y,imgW,imgH); }
+    }
+    //If image is > Canvas Size
+    else {
+        //reset, start from beginning
+        if (x > (CanvasXSize)) { x = CanvasXSize-imgW; }
+        //draw aditional image
+        if (x > (CanvasXSize-imgW)) { ctx.drawImage(img,x-imgW+1,y,imgW,imgH); }
+    }
+    //draw image
+    ctx.drawImage(img,x,y,imgW,imgH);
+    //amount to move
+    x += dx;
+}
+     
+</script>
+
+
+</head>
+
+<body>
+
+<div class="container">
+  <header>
+ 
+    <a href="#"><img src="images/Capture.JPG" alt="Insert Logo Here" width="395" height="100" id="Insert_logo"  /></a>
+   
+ 
+  </header>
+  <nav id="wrap">
+  <ul class="navbar">
+			 <li><a href="#">Home</a></li>
+			 <li><a href="#">HTML</a>
+				<ul>
+				   <li><a href="#">Basics</a></li>
+				   <li><a href="#">Elemnts</a></li>
+				   <li><a href="#">Attributes</a></li>
+				</ul>         
+			 </li>
+			 <li><a href="#">CSS</a>
+				<ul>
+				   <li><a href="#" >Basic</a></li>
+				   <li><a href="#">Backgrounds</a></li>
+				   <li><a href="#">Id & Class</a></li>
+				   <li><a href="#">Box Model</a></li>
+				</ul>         
+			 </li>
+			 <li><a href="#">Javascript</a>
+				<ul>
+				   <li><a href="#">Intro</a></li>
+				   <li><a href="#">Loops & Condition</a></li>
+				   <li><a href="#">Functions & Objects</a></li>
+				   <li><a href="#">Events/Listners</a></li>
+				</ul>         
+			 </li>
+			 <li><a href="#">HTML 5</a>
+				<ul>
+				   <li><a href="#">New Elemnts</a></li>
+				   <li><a href="#">Canvas</a></li>
+				   <li><a href="#">Media</a></li>
+				   <li><a href="#">HTML 5 API's</a></li>
+				</ul>         
+			 </li>
+			 <li><a href="#">CSS3</a>
+				<ul>
+				   <li><a href="#">Intro</a></li>
+				   <li><a href="#">2d & 3d transform</a></li>
+				   <li><a href="#">Animations</a></li>
+				</ul>         
+			 </li>
+		  </ul>
+  </nav>
+  <div class="sidebar1">
+    <ul class="nav">
+      <li><a href="#">Link one</a></li>
+      <li><a href="#">Link two</a></li>
+      <li><a href="#">Link three</a></li>
+      <li><a href="#">Link four</a></li>
+    </ul>
+	 
+    <aside>
+	<h2>Video</h2>
+      <p>
+	  <video src="images/amt.mp4" controls="" controls loop poster="images/side2.jpg"  width="250px" height="200px"></video>.</p>
+        <div id="expand">Wait on me to let me grow !</div></p>
+		<h2>Drag and Drop</h2>
+      <p><div id="dndimg">
+<div id="dnd" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<br>
+      <img id="drag1" src="images/side1.jpg" draggable="true" ondragstart="drag(event)" width="260" height="200"></div> </p>
+	  <h2> Audio</h2>
+	  <p><audio controls id="audio">
+  <source src="images/mario.mp3" type="audio/mp3">
+Your browser does not support the audio element.
+</audio></p>
+    </aside>
+  <!-- end .sidebar1 --></div>
+  <article class="content">
+    <h1>Webkit Storage</h1>
+	<section id="leftbox">
+	<h1>Enter Details</h1>
+<form>
+<p>Enrollment no.: <input type="text" id="one"/></p>
+<p>Enter Name: <textarea id="two"></textarea></p>
+<p><input type="button" value="Save" id="save"/></p>
+</form>
+</section>
+
+<section id="rightbox">
+Atleast enter something
+</section>
+
+<section id="mybox">
+Welcome .......!
+</section>
+    <section>
+      <h2>Backgrounds</h2>
+      <p><div id="rainbow"> RAINBOW MAGIC !</div></p>
+    </section>
+	
+    <!-- end .content --></article>
+  <footer>
+     <canvas id="canvas" width="800" height="200"></canvas>
+    <address>
+     Copyright © 2014  All rights reserved.
+    </address>
+  </footer>
+  <!-- end .container --></div>
+</body>
+</html>
